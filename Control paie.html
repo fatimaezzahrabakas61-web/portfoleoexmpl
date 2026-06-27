@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Contrôle de Gestion – Pointage Paie N vs N-1 | Méthodologie 6 axes détaillée</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: #eef2f5;
+            color: #0a2a3b;
+            padding: 2rem 1.5rem;
+            line-height: 1.45;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 2rem;
+            box-shadow: 0 25px 45px -12px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .hero {
+            background: linear-gradient(125deg, #0a2f3f 0%, #1b5678 100%);
+            padding: 2rem 2.5rem;
+            color: white;
+        }
+        .hero h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .hero p {
+            margin-top: 0.75rem;
+            opacity: 0.85;
+            max-width: 80%;
+        }
+        .expert-tag {
+            background: #ffb347;
+            display: inline-block;
+            padding: 0.25rem 1rem;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #1e3a4d;
+        }
+        .content {
+            padding: 2rem 2.5rem;
+        }
+        .axes-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin: 1.5rem 0 2.5rem;
+        }
+        .axis-card {
+            background: #ffffff;
+            border-radius: 1.5rem;
+            border: 1px solid #e2edf5;
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+        .axis-card:hover {
+            box-shadow: 0 15px 30px -12px rgba(0,0,0,0.12);
+            border-color: #cde0ec;
+        }
+        .axis-header {
+            background: #f9fbfe;
+            padding: 1.2rem 1.8rem;
+            border-bottom: 2px solid;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .axis-number {
+            width: 42px;
+            height: 42px;
+            background: #1b5678;
+            color: white;
+            font-weight: 800;
+            font-size: 1.3rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 30px;
+        }
+        .axis-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0f3b4f;
+        }
+        .axis-body {
+            padding: 1.5rem 1.8rem;
+        }
+        .sub-section {
+            margin-top: 1.2rem;
+            background: #fafdff;
+            border-left: 4px solid #6c9ebf;
+            padding: 1rem 1.3rem;
+            border-radius: 1rem;
+        }
+        .indicator-box {
+            background: #eef3fc;
+            border-radius: 1rem;
+            padding: 0.8rem 1.2rem;
+            margin: 1rem 0;
+            font-family: 'Inter', monospace;
+            font-size: 0.85rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            margin: 1rem 0;
+        }
+        th {
+            background: #e9f0f6;
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #e2eaef;
+        }
+        .badge-alert {
+            background: #ffe1de;
+            color: #bc4a2e;
+            border-radius: 40px;
+            padding: 0.2rem 0.8rem;
+            font-weight: 600;
+            font-size: 0.7rem;
+            display: inline-block;
+        }
+        .badge-ok {
+            background: #e0f0e4;
+            color: #2c6e3c;
+        }
+        .badge-warning {
+            background: #fff0db;
+            color: #c26b1a;
+        }
+        .kpi-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            margin: 1rem 0;
+        }
+        .kpi-card {
+            background: #f4f9fe;
+            border-radius: 1rem;
+            padding: 0.7rem 1rem;
+            flex: 1;
+            text-align: center;
+        }
+        footer {
+            background: #f1f6fa;
+            border-top: 1px solid #dde5ed;
+            padding: 1rem 2rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #4f6e8a;
+        }
+        .simulateur {
+            background: #edf4f0;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        button {
+            background: #1b6b8f;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        button:hover {
+            background: #0f5573;
+        }
+        input, select {
+            border-radius: 30px;
+            border: 1px solid #cbdde9;
+            padding: 8px 14px;
+            font-family: 'Inter';
+            font-size: 0.8rem;
+        }
+        .arrival-badge {
+            background: #d4e6f1;
+            color: #1a5d7a;
+            border-radius: 20px;
+            padding: 0.2rem 0.6rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        @media (max-width: 780px) {
+            .content { padding: 1.5rem; }
+            .axis-title { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="hero">
+        <div class="expert-tag"><i class="fas fa-chart-line"></i> EXPERT CONTRÔLE DE GESTION – POINTAGE PAIE STRUCTURÉ</div>
+        <h1>Pointer la paie N sur la base de N-1 <span style="font-weight: 400;">| Les 6 axes d'analyse approfondie</span></h1>
+        <p>Méthodologie robuste sans indicateurs d'équivalent temps plein : focus sur effectifs réels, arrivées en période, mouvements, et analyse granulaire des rubriques.</p>
+    </div>
+    <div class="content">
+        <div style="background: #e7f0f9; border-radius: 28px; padding: 0.8rem 1.5rem; margin-bottom: 1rem;">
+            <i class="fas fa-compass"></i> <strong>Démarche générale :</strong> Comparaison systématique entre la période N (mois courant) et N-1 (mois précédent). Les 6 axes suivants permettent une détection précoce des anomalies et une maîtrise des coûts salariaux, avec une attention particulière aux arrivées en cours de période.
+        </div>
+
+        <div class="axes-grid">
+            <!-- AXE 1 : Effectifs, mouvements et arrivées en période -->
+            <div class="axis-card">
+                <div class="axis-header" style="border-bottom-color: #2c7da0;">
+                    <div class="axis-number">1</div>
+                    <div class="axis-title">Effectifs, mouvements et arrivées en période</div>
+                </div>
+                <div class="axis-body">
+                    <p><strong>Objectif :</strong> Identifier les variations d'effectif qui impactent mécaniquement la masse salariale. Un écart de paie peut être légitime si l'effectif a changé. L'analyse des arrivées en cours de période est cruciale pour comprendre les proratisations.</p>
+                    <div class="sub-section">
+                        <i class="fas fa-users"></i> <strong>Contrôles clés :</strong>
+                        <ul style="margin-top: 10px; margin-left: 1.5rem;">
+                            <li>Comparer l'effectif total (CDI, CDD) N vs N-1 en nombre de personnes présentes.</li>
+                            <li>Lister les salariés présents uniquement en N-1 (départs) et uniquement en N (arrivées).</li>
+                            <li><strong class="arrival-badge">ARRIVÉE EN PÉRIODE</strong> : Pour chaque salarié arrivé en cours de mois N, vérifier la date d'embauche et la proratisation appliquée (salaire calculé au prorata temporis).</li>
+                            <li>Vérifier les soldes de tout compte et indemnités de départ (ne doivent pas fausser la récurrence).</li>
+                            <li>Pour les arrivées : contrôler l'intégration des éléments variables (prime d'arrivée, période d'essai).</li>
+                        </ul>
+                    </div>
+                    <div class="indicator-box">
+                        📊 <strong>Indicateurs associés :</strong> Taux de rotation, nombre d'embauches, nombre de départs, effectif moyen sur la période (calcul simple : somme des présents chaque jour / nombre de jours).
+                    </div>
+                    <table>
+                        <thead><tr><th>Indicateur</th><th>N-1</th><th>N</th><th>Écart</th><th>Arrivées période N</th></tr></thead>
+                        <tbody>
+                            <tr><td>Effectif total fin de période</td><td>148</td><td>152</td><td>+4</td><td rowspan="2">6 arrivées (dont 2 mi-mois)</td></tr>
+                            <tr><td>Effectif moyen calculé</td><td>147.3</td><td>150.8</td><td>+3.5</td></tr>
+                            <tr><td>Départs période</td><td>2</td><td>5</td><td class="badge-alert">↑ à surveiller</td><td></td></tr>
+                        </tbody>
+                    </table>
+                    <div class="indicator-box">
+                        💡 <strong>Point d'attention arrivées :</strong> Une arrivée le 15 du mois génère un salaire proratisé à 50%. Vérifier systématiquement la cohérence entre la date d'embauche et le montant versé.
+                    </div>
+                </div>
+            </div>
+
+            <!-- AXE 2 : Masse salariale brute et nette -->
+            <div class="axis-card">
+                <div class="axis-header" style="border-bottom-color: #358856;">
+                    <div class="axis-number">2</div>
+                    <div class="axis-title">Masse salariale brute, nette et salaire moyen</div>
+                </div>
+                <div class="axis-body">
+                    <p>Comparer les agrégats globaux : total brut, total net, charges patronales. Calculer le salaire moyen par catégorie pour détecter des variations non justifiées.</p>
+                    <div class="sub-section">
+                        <i class="fas fa-chart-simple"></i> <strong>Analyse des variances (effet volume / effet prix) :</strong>
+                        <ul>
+                            <li><strong>Écart volume (effectif)</strong> = (Effectif moyen N – Effectif moyen N-1) × Salaire moyen N-1</li>
+                            <li><strong>Écart salaire moyen</strong> = Effectif moyen N × (Salaire moyen N – Salaire moyen N-1)</li>
+                            <li>L'écart salaire moyen traduit les augmentations, primes, heures supplémentaires.</li>
+                            <li>Pour les arrivées en période : l'effet volume est automatiquement capturé via l'effectif moyen.</li>
+                        </ul>
+                    </div>
+                    <div class="kpi-row">
+                        <div class="kpi-card">Masse brute N-1 : <strong>487 250</strong></div>
+                        <div class="kpi-card">Masse brute N : <strong>512 400</strong></div>
+                        <div class="kpi-card">Variation : <span class="badge-alert">+5.16 %</span></div>
+                    </div>
+                    <div class="indicator-box">
+                        📈 <strong>Seuil d'alerte :</strong> toute variation supérieure à 3 % sans justification d'effectif ou de NAO doit être investiguée.
+                    </div>
+                </div>
+            </div>
+
+            <!-- AXE 3 : Détail des rubriques de paie -->
+            <div class="axis-card">
+                <div class="axis-header" style="border-bottom-color: #e67e22;">
+                    <div class="axis-number">3</div>
+                    <div class="axis-title">Analyse granulaire par rubrique (salaire de base, primes, heures sup)</div>
+                </div>
+                <div class="axis-body">
+                    <p>Pointer les écarts par famille de rémunération : salaire de base, heures supplémentaires, primes variables, avantages en nature, indemnités.</p>
+                    <div class="sub-section">
+                        <i class="fas fa-receipt"></i> <strong>Rubriques critiques à comparer N vs N-1 :</strong>
+                        <ul>
+                            <li>Salaire de base (vérifier les augmentations individuelles / générales)</li>
+                            <li>Heures supplémentaires et complémentaires (variation de volume)</li>
+                            <li>Primes mensuelles (ancienneté, panier, transport, objectifs)</li>
+                            <li>Avantages en nature et remboursements frais professionnels</li>
+                            <li>Indemnités diverses (licenciement, départ volontaire, rupture conventionnelle)</li>
+                        </ul>
+                    </div>
+                    <table>
+                        <thead><tr><th>Rubrique</th><th>Montant N-1</th><th>Montant N</th><th>Écart</th><th>Alerte</th></tr></thead>
+                        <tbody>
+                            <tr><td>Salaire de base</td><td>385 200</td><td>392 400</td><td>+7 200</td><td class="badge-ok">acceptable +1.9%</td></tr>
+                            <tr><td>Heures supplémentaires</td><td>28 500</td><td>41 200</td><td>+12 700</td><td class="badge-alert">🔔 ALERTE +44%</td></tr>
+                            <tr><td>Primes diverses</td><td>24 800</td><td>19 400</td><td>-5 400</td><td class="badge-warning">investiguer baisse</td></tr>
+                            <tr><td>Avantages en nature</td><td>4 200</td><td>4 350</td><td>+150</td><td class="badge-ok">stable</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="indicator-box">
+                        ✅ <strong>Action :</strong> Pour les heures supplémentaires en hausse, vérifier les plannings et les validations hiérarchiques. Pour les primes en baisse, contrôler si objectifs non atteints ou changement de politique.
+                    </div>
+                </div>
+            </div>
+
+            <!-- AXE 4 : Cotisations sociales et assiettes -->
+            <div class="axis-card">
+                <div class="axis-header" style="border-bottom-color: #9b6a9c;">
+                    <div class="axis-number">4</div>
+                    <div class="axis-title">Contrôle des cotisations & assiettes sociales</div>
+                </div>
+                <div class="axis-body">
+                    <p>Même avec des bruts similaires, une modification des taux de cotisations (mutuelle, prévoyance, frais de santé) peut générer des écarts sur le net et les charges patronales.</p>
+                    <div class="sub-section">
+                        <i class="fas fa-shield-alt"></i> <strong>Points de contrôle :</strong>
+                        <ul>
+                            <li>Comparer le taux global de charges patronales rapporté à la masse brute (doit être stable à périmètre constant).</li>
+                            <li>Vérifier les changements de tranche (plafond sécurité sociale, réduction générale).</li>
+                            <li>Extraire pour un échantillon de salariés le détail cotisations (santé, prévoyance, CSG/CRDS).</li>
+                            <li>S'assurer que la base de cotisation N corresponde aux règles en vigueur.</li>
+                            <li>Pour les arrivées en période : vérifier l'affiliation immédiate aux mutuelles et prévoyances.</li>
+                        </ul>
+                    </div>
+                    <div class="indicator-box">
+                        📉 <strong>Exemple de ratio :</strong> Taux de charges patronales N-1 : 42,3 % | N : 42,5 % → variation minime acceptable. Si écart supérieur à 0,5 point, investiguer modification taux ou erreur d'assiette.
+                    </div>
+                    <table>
+                        <thead><tr><th>Type de cotisation</th><th>Taux N-1</th><th>Taux N</th><th>Variation</th><th>Statut</th></tr></thead>
+                        <tbody>
+                            <tr><td>Cotisations patronales globales</td><td>42.3%</td><td>42.5%</td><td>+0.2 pts</td><td class="badge-ok">acceptable</td></tr>
+                            <tr><td>Mutuelle obligatoire</td><td>1.5%</td><td>1.8%</td><td>+0.3 pts</td><td class="badge-warning">vérifier nouvel accord</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- AXE 5 : Éléments exceptionnels et non récurrents -->
+            <div class="axis-card">
+                <div class="axis-header" style="border-bottom-color: #c27e3a;">
+                    <div class="axis-number">5</div>
+                    <div class="axis-title">Éléments exceptionnels, régularisations & provisions</div>
+                </div>
+                <div class="axis-body">
+                    <p>Distinguer les composantes récurrentes des ponctuelles (13e mois, intéressement, rappels, acomptes, régularisation congés payés). Un écart peut être lié à la présence d'un élément exceptionnel sur une seule des deux périodes.</p>
+                    <div class="sub-section">
+                        <i class="fas fa-calendar-week"></i> <strong>Vérifications obligatoires :</strong>
+                        <ul>
+                            <li>Lister les primes exceptionnelles versées en N-1 mais pas en N (prime vacances, solde CET, prime annuelle).</li>
+                            <li>Contrôler les régularisations de congés payés et RTT (impact sur le brut).</li>
+                            <li>Identifier les rappels de salaire (effet rétroactif d'augmentation) et les rattrapages.</li>
+                            <li>S'assurer que les acomptes et avances sont bien déduits en N et N-1 de manière homogène.</li>
+                            <li>Pour les arrivées en période : vérifier l'absence de rappels antérieurs à la date d'embauche.</li>
+                        </ul>
+                    </div>
+                    <div class="indicator-box">
+                        🧾 <strong>Bonnes pratiques :</strong> Créer un indicateur « masse salariale normalisée » (hors exceptionnels) pour comparer la tendance sous-jacente. Un écart résiduel représente le GVT (glissement vieillesse technicité).
+                    </div>
+                    <table>
+                        <thead><tr><th>Élément exceptionnel</th><th>N-1</th><th>N</th><th>Écart</th><th>Justification</th></tr></thead>
+                        <tbody>
+                            <tr><td>Prime vacances</td><td>15 000</td><td>0</td><td>-15 000</td><td>Versée annuellement en juin</td></tr>
+                            <tr><td>Rappel augmentation</td><td>0</td><td>2 800</td><td>+2 800</td><td>Effet rétroactif sur 3 mois</td></tr>
+                            <tr><td>Régularisation congés</td><td>1 200</td><td>950</td><td>-250</td><td>Variation saisonnière normale</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- AXE 6 : Reporting des anomalies et plan d’action -->
+            <div class="axis-card">
+                <div class="axis-header" style="border-bottom-color: #bc6f2c;">
+                    <div class="axis-number">6</div>
+                    <div class="axis-title">Cartographie des écarts & tableau de bord correctif</div>
+                </div>
+                <div class="axis-body">
+                    <p>Consolider l'ensemble des anomalies détectées, les quantifier, proposer des actions correctives et suivre leur résolution. Intégrer les spécificités liées aux arrivées en période.</p>
+                    <div class="sub-section">
+                        <i class="fas fa-flag-checkered"></i> <strong>Tableau de synthèse des anomalies (extrait) :</strong>
+                        <table>
+                            <thead><tr><th>Anomalie / écart</th><th>Impact</th><th>Cause probable</th><th>Action corrective</th><th>Responsable</th></tr></thead>
+                            <tbody>
+                                <tr><td>Heures supplémentaires en hausse de 210h</td><td>+9 450</td><td>Surcharge d'activité non validée</td><td>Vérifier les demandes, plafonner</td><td>Responsable RH</td></tr>
+                                <tr><td>Prime d'ancienneté erronée pour 2 salariés (doublon)</td><td>+890</td><td>Saisie manuelle dans SIRH</td><td>Corriger base, régulariser N+1</td><td>Gestion paie</td></tr>
+                                <tr><td>Oubli retenue absence injustifiée (4 salariés)</td><td>-2 100</td><td>Absence non transmise</td><td>Retenue sur paie suivante</td><td>Manager opérationnel</td></tr>
+                                <tr><td>Arrivée mi-mois mal proratisée (2 cas)</td><td>+1 250</td><td>Date d'embauche erronée</td><td>Corriger et ajuster N+1</td><td>Administration du personnel</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="indicator-box">
+                        📋 <strong>Livrable final :</strong> Rapport de pointage validé par le contrôle de gestion, avec feuille de route des correctifs et suivi des indicateurs (taux d'anomalies résolues). Attention particulière aux arrivées en période pour éviter les erreurs de proratisation récurrentes.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Simulateur d'analyse des écarts (effet effectif / salaire) -->
+        <div class="simulateur">
+            <h3 style="margin-bottom: 1rem;"><i class="fas fa-calculator"></i> Simulateur : Décomposition de la variance (effet effectif vs effet salaire moyen)</h3>
+            <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end;">
+                <div><label>Effectif moyen N-1 (personnes)</label><br><input type="number" id="effN1" value="147" step="1"></div>
+                <div><label>Salaire moyen N-1</label><br><input type="number" id="salN1" value="3250" step="50"></div>
+                <div><label>Effectif moyen N (personnes)</label><br><input type="number" id="effN" value="151" step="1"></div>
+                <div><label>Salaire moyen N</label><br><input type="number" id="salN" value="3410" step="50"></div>
+                <div><label>Arrivées en période N</label><br><input type="number" id="arriveesN" value="6" step="1" style="width:100px;"></div>
+                <div><button id="simulerBtn">Calculer les écarts</button></div>
+            </div>
+            <div id="resultSimu" class="indicator-box" style="margin-top: 1rem; background: white;">
+                Cliquez pour analyser la variation de masse salariale entre N-1 et N, en intégrant les arrivées en période.
+            </div>
+        </div>
+
+        <!-- Checklist finale interactive -->
+        <div style="background: #eef2f0; border-radius: 1.5rem; padding: 1.5rem; margin: 1rem 0;">
+            <h4><i class="fas fa-check-double"></i> Checklist finale – Validation du pointage paie N sur base N-1</h4>
+            <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem;">
+                <div style="flex:1">
+                    <ul style="list-style: none;">
+                        <li>✔️ Comparaison effectif & mouvements validée</li>
+                        <li>✔️ Analyse des arrivées en période et proratisation</li>
+                        <li>✔️ Analyse masse salariale brute / nette</li>
+                    </ul>
+                </div>
+                <div style="flex:1">
+                    <ul style="list-style: none;">
+                        <li>✔️ Revue rubriques détaillées (heures sup, primes)</li>
+                        <li>✔️ Vérification cotisations & assiettes sociales</li>
+                        <li>✔️ Isolation des éléments exceptionnels</li>
+                        <li>✔️ Plan d'action correctif formalisé</li>
+                    </ul>
+                </div>
+            </div>
+            <button id="copyChecklistBtn" style="margin-top: 1rem; background: #4c7a5a;"><i class="fas fa-copy"></i> Copier checklist</button>
+        </div>
+
+        <footer>
+            <i class="fas fa-chart-line"></i> Méthodologie expert en contrôle de gestion – Pointage paie N / N-1 selon 6 axes d'analyse. Suivi des arrivées en période et des proratisations inclus.
+        </footer>
+    </div>
+</div>
+
+<script>
+    // simulateur variance
+    const simBtn = document.getElementById('simulerBtn');
+    const resultDiv = document.getElementById('resultSimu');
+
+    function simulerVariance() {
+        let eN1 = parseFloat(document.getElementById('effN1').value);
+        let sN1 = parseFloat(document.getElementById('salN1').value);
+        let eN = parseFloat(document.getElementById('effN').value);
+        let sN = parseFloat(document.getElementById('salN').value);
+        let arrivees = parseFloat(document.getElementById('arriveesN').value) || 0;
+        
+        if (isNaN(eN1) || isNaN(sN1) || isNaN(eN) || isNaN(sN)) {
+            resultDiv.innerHTML = "Veuillez entrer des valeurs numériques valides.";
+            return;
+        }
+        
+        let masseN1 = eN1 * sN1;
+        let masseN = eN * sN;
+        let ecartTotal = masseN - masseN1;
+        let ecartEffectif = (eN - eN1) * sN1;
+        let ecartSalaire = eN * (sN - sN1);
+        
+        let html = `<strong>Analyse de variance détaillée :</strong><br>
+                    Masse N-1 : ${masseN1.toFixed(2)} | Masse N : ${masseN.toFixed(2)} | Écart total : ${ecartTotal.toFixed(2)}<br>
+                    Arrivées en période N : ${arrivees} personne(s)<br><br>
+                    ➜ <span style="color:#1f6392;">Effet volume (effectif)</span> : ${ecartEffectif.toFixed(2)} (${((Math.abs(ecartEffectif)/(Math.abs(ecartTotal)+0.001))*100).toFixed(1)}% de l'écart)<br>
+                    ➜ <span style="color:#2b7a4b;">Effet salaire moyen / primes</span> : ${ecartSalaire.toFixed(2)} (${((Math.abs(ecartSalaire)/(Math.abs(ecartTotal)+0.001))*100).toFixed(1)}% de l'écart)<br>`;
+        
+        if (arrivees > 0) {
+            html += `<br><span class="arrival-badge">📌 Attention : ${arrivees} arrivée(s) en période N</span> – Vérifier la proratisation des salaires et l'intégration des variables.`;
+        }
+        
+        if (Math.abs(ecartEffectif) > Math.abs(ecartSalaire) && ecartTotal !== 0) {
+            html += `<br><br><span class="badge-alert" style="display:inline-block;">🔔 La variation est principalement due aux effectifs (embauches/départs).</span>`;
+        } else if (ecartTotal !== 0) {
+            html += `<br><br><span class="badge-alert" style="display:inline-block;">⚠️ La variation provient surtout du salaire moyen / primes → analyser les augmentations, heures supplémentaires.</span>`;
+        } else {
+            html += `<br><br><span>✔️ Aucune variation significative entre N-1 et N.</span>`;
+        }
+        resultDiv.innerHTML = html;
+    }
+    
+    if(simBtn) simBtn.addEventListener('click', simulerVariance);
+    window.addEventListener('DOMContentLoaded', simulerVariance);
+
+    // copie checklist
+    const copyBtn = document.getElementById('copyChecklistBtn');
+    if(copyBtn) {
+        copyBtn.addEventListener('click', () => {
+            const checklistText = "CHECKLIST POINTAGE PAIE N / N-1 (6 AXES)\n" +
+                "1. Effectifs & mouvements : effectif total, entrants/sortants, arrivées en période vérifiées\n" +
+                "2. Masse salariale brute et nette : analyse des variances (effet volume/effet salaire moyen)\n" +
+                "3. Rubriques détaillées : heures sup, primes, avantages → investigation écarts >5%\n" +
+                "4. Cotisations et assiettes : taux de charges stable, assiettes conformes\n" +
+                "5. Exceptionnels & régularisations : neutralisation des éléments non récurrents\n" +
+                "6. Plan d'action correctif : anomalies documentées et suivies, proratisation arrivées contrôlée";
+            navigator.clipboard.writeText(checklistText).then(() => {
+                copyBtn.innerText = "✓ Checklist copiée !";
+                setTimeout(() => copyBtn.innerText = "Copier checklist", 2000);
+            });
+        });
+    }
+</script>
+</body>
+</html>
